@@ -1141,6 +1141,55 @@ class CartRuleCore extends ObjectModel
                             }
 
                             break;
+                            case 'combinations':
+                            // Build the matching list of "{productId}-{combinationId}" compatible with the IN mysql operator, this will result in  a string looking like:
+                            //   "23-45", "23-46", "42-0"
+                            $combinationInValue = implode(',', array_map(fn ($combinationIdentifier) => '"' . $combinationIdentifier . '"', $eligible_products_list));
+                            $cart_combinations = Db::getInstance()->executeS('
+							SELECT cp.quantity, cp.`id_product`, cp.`id_product_attribute`
+							FROM `' . _DB_PREFIX_ . 'cart_product` cp
+							WHERE cp.`id_cart` = ' . (int) $cart->id . '
+							AND CONCAT(cp.`id_product`, "-", cp.`id_product_attribute`) IN (' . $combinationInValue . ')');
+                            $count_matching_products = 0;
+                            
+                            foreach ($cart_combinations as $cart_combination) {
+                                if (in_array($cart_combination['id_product_attribute'], $product_rule['values'])) {
+                                    $count_matching_products += $this->checkGiftCount($cart_combination['id_product'], $cart_combination['id_product_attribute'],$cart_combination['quantity'], CartRule::getGiftCount($cart));
+                                    $matching_products_list[$id_rule][]  = $cart_combination['id_product'] . '-'.$cart_combination['id_product_attribute'] ;
+                                }
+                            }
+                            
+                            if ($count_matching_products < $product_rule_group['quantity']) {
+                                    ++$condition;
+                                    break;
+                            }
+
+                            break;
+                            case 'features':
+                            // Build the matching list of "{productId}-{productFeatureValueId}" compatible with the IN mysql operator for features matching, this will result in  a string looking like:
+                            //   "23-45", "23-46", "42-0"
+                            $featureInValue = implode(',', array_map(fn ($featureIdentifier) => '"' . $featureIdentifier . '"', $eligible_products_list));
+                            $cart_features = Db::getInstance()->executeS('
+                            SELECT cp.quantity, cp.`id_product`, f.`id_feature`, f.`id_feature_value`, cp.`id_product_attribute`
+                            FROM `' . _DB_PREFIX_ . 'cart_product` cp
+                            LEFT JOIN `' . _DB_PREFIX_ . 'feature_product` f ON cp.id_product = f.id_product
+                            WHERE cp.`id_cart` = ' . (int) $cart->id . '
+                            AND CONCAT(cp.`id_product`, "-", cp.`id_product_attribute`) IN (' . $featureInValue . ')');
+                            $count_matching_products = 0;
+
+                            foreach ($cart_features as $cart_feature) {
+                                 if (in_array($cart_feature['id_feature'], $product_rule['values']) || in_array($cart_feature['id_feature_value'], $product_rule['values'])) {
+                                    $count_matching_products += $this->checkGiftCount($cart_feature['id_product'], $cart_feature['id_product_attribute'],$cart_feature['quantity'], CartRule::getGiftCount($cart));
+                                    $matching_products_list[$id_rule][]  = $cart_feature['id_product'] . '-'.$cart_feature['id_product_attribute'] ;
+                                }
+                            }
+                            
+                            if ($count_matching_products < $product_rule_group['quantity']) {
+                                    ++$condition;
+                                    break;
+                            }
+
+                            break;                         
                         default:
                             return (!$displayError) ? false : $this->trans('Unknown type of product restriction', [], 'Shop.Notifications.Error');  
                     }
