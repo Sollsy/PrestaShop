@@ -27,7 +27,7 @@
 		<input type="hidden" name="product_rule_{$product_rule_group_id|intval}[]" value="{$product_rule_id}" />
 		<input type="hidden" name="product_rule_{$product_rule_group_id|intval}_{$product_rule_id|intval}_type" value="{$product_rule_type|escape}" />
 		{* Everything is on a single line in order to avoid a empty space between the [ ] and the word *}
-		[{if $product_rule_type == 'products'}{l s='Products' d='Admin.Global'}{elseif $product_rule_type == 'categories'}{l s='Categories' d='Admin.Global'}{elseif $product_rule_type == 'manufacturers'}{l s='Brands' d='Admin.Global'}{elseif $product_rule_type == 'suppliers'}{l s='Suppliers' d='Admin.Global'}{elseif $product_rule_type == 'attributes'}{l s='Attributes' d='Admin.Global'}{/if}]
+		[{if $product_rule_type == 'products'}{l s='Products' d='Admin.Global'}{elseif $product_rule_type == 'combinations'}{l s='Combinations' d='Admin.Global'}{elseif $product_rule_type == 'features'}{l s='Features' d='Admin.Global'}{elseif $product_rule_type == 'categories'}{l s='Categories' d='Admin.Global'}{elseif $product_rule_type == 'manufacturers'}{l s='Brands' d='Admin.Global'}{elseif $product_rule_type == 'suppliers'}{l s='Suppliers' d='Admin.Global'}{elseif $product_rule_type == 'attributes'}{l s='Attributes' d='Admin.Global'}{/if}]
 	</td>
 	<td>
 		<input type="text" id="product_rule_{$product_rule_group_id|intval}_{$product_rule_id|intval}_match" value="" disabled="disabled" />
