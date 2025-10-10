@@ -534,6 +534,47 @@ class AdminCartRulesControllerCore extends AdminController
                 Context::getContext()->smarty->assign('product_rule_choose_content', $choose_content);
 
                 break;
+            case 'combinations':
+                $products = ['selected' => [], 'unselected' => []];
+                $results = Db::getInstance()->executeS('
+				SELECT CONCAT(pl.name, " - ",(
+                    SELECT GROUP_CONCAT(al.name ORDER BY ag.`position` ASC SEPARATOR " - ") 
+                    FROM `'._DB_PREFIX_.'product_attribute_combination` pac 
+                    LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al USING (`id_attribute`) 
+                    LEFT JOIN `'._DB_PREFIX_.'attribute` USING (`id_attribute`) 
+                    LEFT JOIN `'._DB_PREFIX_.'attribute_group` ag USING (`id_attribute_group`) 
+                    WHERE pac.`id_product_attribute`=pa.`id_product_attribute`)
+                ) as name, pa.id_product_attribute as id
+				FROM ' . _DB_PREFIX_ . 'product_attribute pa
+				LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl
+					ON (pa.`id_product` = pl.`id_product`
+					AND pl.`id_lang` = ' . (int) Context::getContext()->language->id . Shop::addSqlRestrictionOnLang('pl') . ')
+				' . Shop::addSqlAssociation('product', 'pa') . '            
+				WHERE pl.id_lang = ' . (int) Context::getContext()->language->id . '
+				ORDER BY name');
+
+                foreach ($results as $row) {
+                    $products[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
+                }
+                Context::getContext()->smarty->assign('product_rule_itemlist', $products);
+                $choose_content = $this->createTemplate('product_rule_itemlist.tpl')->fetch();
+                Context::getContext()->smarty->assign('product_rule_choose_content', $choose_content);
+
+                break;                                         
+            case 'manufacturers':
+                $products = ['selected' => [], 'unselected' => []];
+                $results = Db::getInstance()->executeS('
+				SELECT name, id_manufacturer as id
+				FROM ' . _DB_PREFIX_ . 'manufacturer
+				ORDER BY name');
+                foreach ($results as $row) {
+                    $products[in_array($row['id'], $selected) ? 'selected' : 'unselected'][] = $row;
+                }
+                Context::getContext()->smarty->assign('product_rule_itemlist', $products);
+                $choose_content = $this->createTemplate('product_rule_itemlist.tpl')->fetch();
+                Context::getContext()->smarty->assign('product_rule_choose_content', $choose_content);
+
+                break;            
             case 'manufacturers':
                 $products = ['selected' => [], 'unselected' => []];
                 $results = Db::getInstance()->executeS('
