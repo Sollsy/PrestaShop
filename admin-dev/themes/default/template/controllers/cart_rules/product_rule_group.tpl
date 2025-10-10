@@ -54,6 +54,8 @@
 									<option value="categories">{l s='Categories' d='Admin.Global'}</option>
 									<option value="manufacturers">{l s='Brands' d='Admin.Global'}</option>
 									<option value="suppliers">{l s='Suppliers' d='Admin.Global'}</option>
+									<option value="combinations">{l s='Combinations' d='Admin.Global'}</option>
+									<option value="features">{l s='Features' d='Admin.Global'}</option>
 								</select>
 							</div>
 							<div class="col-lg-4">
