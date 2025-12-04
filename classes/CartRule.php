@@ -103,6 +103,7 @@ class CartRuleCore extends ObjectModel
     public $active = true;
     public $date_add;
     public $date_upd;
+    public $catalog_price = 0;
 
     protected static $cartAmountCache = [];
 
@@ -813,6 +814,10 @@ class CartRuleCore extends ObjectModel
 
                     break;
                 }
+                if($this->catalog_price){
+                    $is_ok=true;
+                    break;
+                }                
             }
             if (!$is_ok) {
                 return (!$display_error) ? false : $this->trans('You cannot use this voucher on products on sale', [], 'Shop.Notifications.Error');
@@ -887,7 +892,9 @@ class CartRuleCore extends ObjectModel
                     }
                 }
             }
-
+            if ($this->catalog_price && $this->getContextualValue(true,$context)<=0) {
+                return (!$display_error) ? false : $this->trans('Provided products already have higher discounts.', [], 'Shop.Notifications.Error');
+            }   
             if ($cartTotal < $minimum_amount) {
                 return (!$display_error) ? false : $this->trans('The minimum amount to benefit from this promo code is %s.', [Tools::getContextLocale($context)->formatPrice($minimum_amount, $context->currency->iso_code)], 'Shop.Notifications.Error');
             }
@@ -1909,4 +1916,13 @@ class CartRuleCore extends ObjectModel
 
         return $return;
     }
+    /**
+     * Summary of getBestDiscountForProduct
+     * @param mixed $current_discount current specific price discount
+     * @param mixed $new_discount new discount from cartrule calculated from product catalog price
+     * @return mixed if $new_discount is higher than $current_discount, return $new discount with deducted $current_discount else return 0;
+     */
+    public function getBestDiscountForProduct($current_discount,$new_discount){
+        return ($new_discount>$current_discount && ($discount = $new_discount-$current_discount)>0)?$discount:0;
+    }    
 }
