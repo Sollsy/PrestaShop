@@ -169,10 +169,10 @@ class CartRuleCalculator
                     // apply only on one product of the cheapest row
                     if($cartRule->catalog_price){
                         //reduction based on catalog price
-                        $new_discount_ti = $cartRow->getRowData()['price_without_reduction'] * $cartRule->reduction_percent / 100;
-                        $new_discount_te = $cartRow->getRowData()['price_without_reduction_without_tax'] * $cartRule->reduction_percent / 100;
-                        $discountTaxIncluded = $cartRule->getBestDiscountForProduct($cartRow->getRowData()['reduction'],$new_discount_ti);
-                        $discountTaxExcluded = $cartRule->getBestDiscountForProduct($cartRow->getRowData()['reduction_without_tax'],$new_discount_te);     
+                        $new_discount_ti = $cartRowCheapest->getRowData()['price_without_reduction'] * $cartRule->reduction_percent / 100;
+                        $new_discount_te = $cartRowCheapest->getRowData()['price_without_reduction_without_tax'] * $cartRule->reduction_percent / 100;
+                        $discountTaxIncluded = $cartRule->getBestDiscountForProduct($cartRowCheapest->getRowData()['reduction'],$new_discount_ti);
+                        $discountTaxExcluded = $cartRule->getBestDiscountForProduct($cartRowCheapest->getRowData()['reduction_without_tax'],$new_discount_te);     
                     }else{
                         $discountTaxIncluded = $cartRowCheapest->getInitialUnitPrice()->getTaxIncluded()
                             * $cartRule->reduction_percent / 100;
