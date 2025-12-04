@@ -161,6 +161,27 @@
  	</div>
  </div>
 
+<div id="apply_discount_from_catalog_price" class="form-group">
+ 	<label class="control-label col-lg-3">
+    <span class="label-tooltip" data-toggle="tooltip"
+        title="{l|escape s='If enabled, the voucher will calculate remaining value from catalog price if product specific price is lower.'}">
+    {l s='Catalog Price Reduction' d='Admin.Catalog.Feature'}
+    </span>
+  </label>
+ 	<div class="col-lg-9">
+ 		<span class="switch prestashop-switch fixed-width-lg">
+ 			<input type="radio" name="catalog_price" id="catalog_price_on" value="1"{if $currentTab->getFieldValue($currentObject, 'catalog_price')|intval} checked="checked"{/if}/>
+ 			<label class="t" for="catalog_price_on">
+ 				{l s='Yes' d='Admin.Global'}
+ 			</label>
+ 			<input type="radio" name="catalog_price" id="catalog_price_off" value="0"{if !$currentTab->getFieldValue($currentObject, 'catalog_price')|intval} checked="checked"{/if}/>
+ 			<label class="t" for="catalog_price_off">
+ 				{l s='No' d='Admin.Global'}
+ 			</label>
+ 			<a class="slide-button btn"></a>
+ 		</span>
+ 	</div>
+ </div>
 <div class="form-group">
 	<label class="control-label col-lg-3">{l s='Send a free gift' d='Admin.Catalog.Feature'}</label>
 	<div class="col-lg-9">
